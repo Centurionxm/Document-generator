@@ -70,13 +70,21 @@ export default async function handler(req, res) {
       }),
       signal: AbortSignal.timeout(15000),
     });
+    const responseText = await response.text();
     let checkout;
-    try { checkout = await response.json(); } catch { checkout = null; }
+    try { checkout = JSON.parse(responseText); } catch { checkout = null; }
     if (!response.ok || typeof checkout?.url !== "string" || !checkout.url.startsWith("https://")) {
       await dbRequest(db, `paperpilot_orders?api_ref=eq.${encodeURIComponent(apiRef)}`, {
         method: "PATCH", headers: { Prefer: "return=minimal" }, body: JSON.stringify({ status: "CHECKOUT_FAILED" }),
       }).catch(() => {});
-      console.error("IntaSend checkout creation failed.", { status: response.status });
+      // Log the provider's error message without logging API keys or the checkout request.
+      console.error("IntaSend checkout creation failed.", {
+        status: response.status,
+        error: typeof checkout?.error === "string" ? checkout.error.slice(0, 300) : undefined,
+        message: typeof checkout?.message === "string" ? checkout.message.slice(0, 300) : undefined,
+        detail: typeof checkout?.detail === "string" ? checkout.detail.slice(0, 300) : undefined,
+        responsePreview: !checkout ? responseText.slice(0, 300) : undefined,
+      });
       return res.status(502).json({ error: "Unable to start checkout. Please try again." });
     }
     return res.status(200).json({ checkoutUrl: checkout.url, reference: apiRef, plan, amount: selected.amount, currency: selected.currency });
