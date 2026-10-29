@@ -39,9 +39,17 @@ A mobile-friendly document generator for invoices, quotations, receipts and prof
 ## Current implementation and limitations
 
 - The PDF builder runs in the browser using jsPDF and AutoTable.
-- The Email button opens the user's email app with a draft; the user must attach the downloaded PDF.
-- The current three-free-document counter uses browser storage and can be reset or bypassed by switching devices. It is a prototype limit, not tamper-proof server enforcement.
-- Authenticated account access, subscription renewal/expiry, paid entitlement enforcement, and cloud document storage UI are not implemented.
+- WhatsApp sharing uses the device's native file-share sheet when supported. On unsupported browsers, PaperPilot downloads the PDF and opens a WhatsApp message; the user must attach the PDF manually.
+- VAT can be set to 16% with one tap, but users must confirm the correct VAT treatment for their supply. Discounts are subtracted before tax is calculated.
+- Documents can display a KRA PIN, Paybill/Till details, and a Paid/Unpaid/Overdue stamp. Quotations can be converted to invoices in the current form.
+- Business profiles and client shortcuts are saved in browser local storage on that device only. They are not synced to an account or cloud. Avoid shared devices for confidential client information.
+- Free PDF generation is available without signup and includes the PaperPilot footer.
+- The payment flow records payment orders, but paid-feature enforcement is not implemented. Do not represent a payment as unlocking Pro features until server-side payment verification and entitlements are added.
+- Recurring billing and subscription expiry enforcement are not implemented; the KES 1,000 checkout is currently a one-time payment.
+
+## Kenya KRA / eTIMS compliance
+
+PaperPilot currently generates ordinary PDFs in the browser. It does **not** integrate with eTIMS, transmit invoice data to KRA, or generate an eTIMS fiscal invoice. A KRA PIN field or a VAT line does not make a document eTIMS-compliant. Businesses required to issue electronic tax invoices should use a KRA eTIMS solution or a properly integrated approved system. See KRA's current [eTIMS guidance](https://www.kra.go.ke/helping-tax-payers/faqs/learn-about-etims) and [available eTIMS solutions](https://www.kra.go.ke/news-center/public-notices/2080-etims-compliance).
 
 ## Security
 
